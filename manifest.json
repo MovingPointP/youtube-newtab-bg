@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube New Tab Background (test)",
+  "version": "0.0.2",
+  "description": "新しいタブの背景で YouTube 動画を再生できるか確かめるための最小構成",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "referer", "enabled": true, "path": "rules.json" }
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>新しいタブ</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    iframe {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    動作確認用。VIDEO_ID の部分を差し替えると別の動画で試せます。
+    autoplay=1 : 自動再生（ミュートが必須）
+    mute=1     : ミュート
+    loop=1 + playlist=同じID : 1本をループ再生
+    controls=0 : 操作バーを隠す
+    newtabbg=1 : 目印。rules.json がこれを見て Referer を付ける
+  -->
+  <iframe
+    src="https://www.youtube.com/embed/OWDcn7hl16A?autoplay=1&mute=1&loop=1&playlist=OWDcn7hl16A&controls=0&newtabbg=1"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+</body>
+</html>

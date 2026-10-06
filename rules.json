@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Referer", "operation": "set", "value": "https://youtube-newtab-bg.example/" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||www.youtube.com/embed/*newtabbg=1",
+      "resourceTypes": ["sub_frame"]
+    }
+  }
+]
