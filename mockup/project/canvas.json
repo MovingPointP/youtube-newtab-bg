@@ -1,21 +1,21 @@
 {
   "v": 3,
+  "attachments": {},
   "createdOnFiles": { "v": 1, "at": "2026-10-07T00:00:00Z" },
   "title": "YouTube New Tab Background モック",
   "launch": { "view": "canvas" },
   "pages": [],
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ A: 左下に動画名・右下に音量" },
-    "NewTabB.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B: 左下にまとめる" },
-    "NewTabC.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ C: 下中央のバー（マウスを動かしたときだけ出す）" },
-    "NewTabEmpty.dc.html": { "x": 4080, "y": 0, "w": 1280, "h": 800, "title": "未登録・エラー時" },
-    "PopupA.dc.html": { "x": 0, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ A: プレイリストが先" },
-    "PopupB.dc.html": { "x": 440, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ B: 見た目の設定が先" }
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-1: 音量バーを常に表示" },
+    "NewTabB.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-2: スピーカーにカーソルを乗せたときだけ音量バー", "is_interactive": true },
+    "NewTabEmpty.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "未登録・エラー時" },
+    "PopupA.dc.html": { "x": 0, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ A（青）" },
+    "PopupA2.dc.html": { "x": 440, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ A（黒）" }
   },
-  "order": ["Main.dc.html", "NewTabB.dc.html", "NewTabC.dc.html", "NewTabEmpty.dc.html", "PopupA.dc.html", "PopupB.dc.html"],
+  "order": ["Main.dc.html", "NewTabB.dc.html", "NewTabEmpty.dc.html", "PopupA.dc.html", "PopupA2.dc.html"],
   "notes": {
-    "rowNewTab": { "x": 0, "y": -300, "text": "新しいタブ", "kind": "title1", "maxW": 5360 },
-    "rowPopup": { "x": 0, "y": 1000, "text": "ツールバーのポップアップ", "kind": "title1", "maxW": 800 }
+    "rowNewTab": { "x": 0, "y": -300, "text": "新しいタブ", "kind": "title1", "maxW": 4000, "w": 240 },
+    "rowPopup": { "x": 0, "y": 1000, "text": "ツールバーのポップアップ", "kind": "title1", "maxW": 800, "w": 240 }
   },
   "designSystems": []
 }

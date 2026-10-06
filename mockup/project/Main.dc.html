@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>新しいタブ A</title>
+<title>新しいタブ B-1</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -23,21 +23,21 @@ radial-gradient(circle at 90% 85%,#2e5b4a 0,transparent 40%),
 <div style="position: relative; width: 1280px; height: 800px; overflow: hidden; font-family: system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif; color: #ffffff">
 <div class="video" style="filter: blur({{blur}}px)"></div>
 <div style="position: absolute; inset: 0; background: rgba(0, 0, 0, {{dim}})"></div>
-<div style="position: absolute; left: 40px; right: 40px; bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px">
-<a href="https://www.youtube.com/" style="font-size: 18px; font-weight: 600; text-decoration: none; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6); max-width: 640px">[動画のタイトル]</a>
-<div style="display: flex; align-items: center; gap: 12px; padding: 6px 16px 6px 6px; border-radius: 999px; background: rgba(0, 0, 0, 0.35)">
-<button type="button" aria-label="ミュート解除" style="width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, 0.16); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<div style="position: absolute; left: 40px; bottom: 40px; max-width: 520px; display: flex; flex-direction: column; gap: 12px; padding: 18px 20px 14px; border-radius: 16px; background: rgba(14, 16, 22, {{panel}}); backdrop-filter: blur(12px)">
+<a href="https://www.youtube.com/" style="font-size: 22px; font-weight: 700; line-height: 1.35; text-decoration: none">[動画のタイトル]</a>
+<div style="display: flex; align-items: center; gap: 10px">
+<button type="button" aria-label="ミュート解除" style="width: 44px; height: 44px; margin-left: -8px; border-radius: 50%; border: 0; background: transparent; color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"></path><path d="m22 9-6 6"></path><path d="m16 9 6 6"></path></svg>
 </button>
-<label style="display: flex; align-items: center"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">音量</span><input class="vol" type="range" min="0" max="100" value="40" style="width: 120px"></label>
+<label style="display: flex; align-items: center"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">音量</span><input class="vol" type="range" min="0" max="100" value="40" style="width: 160px"></label>
 </div>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"blur":{"editor":"range","min":0,"max":40,"step":1,"unit":"px","default":16,"section":"背景"},"dim":{"editor":"range","min":0,"max":0.8,"step":0.05,"default":0.35,"section":"背景"},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"blur":{"editor":"range","min":0,"max":40,"step":1,"unit":"px","default":16,"section":"背景"},"dim":{"editor":"range","min":0,"max":0.8,"step":0.05,"default":0.35,"section":"背景"},"panel":{"editor":"range","min":0,"max":0.9,"step":0.05,"default":0.55,"section":"パネル"},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
 renderVals() {
-return { blur: this.props.blur ?? 16, dim: this.props.dim ?? 0.35 };
+return { blur: this.props.blur ?? 16, dim: this.props.dim ?? 0.35, panel: this.props.panel ?? 0.55 };
 }
 }
 </script>
