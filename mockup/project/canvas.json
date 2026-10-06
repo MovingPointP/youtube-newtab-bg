@@ -6,16 +6,15 @@
   "launch": { "view": "canvas" },
   "pages": [],
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-1: 音量バーを常に表示" },
-    "NewTabB.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-2: スピーカーにカーソルを乗せたときだけ音量バー", "is_interactive": true },
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-1（黒）" },
+    "NewTabLight.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ B-1（白）" },
     "NewTabEmpty.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "未登録・エラー時" },
-    "PopupA.dc.html": { "x": 0, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ A（青）" },
-    "PopupA2.dc.html": { "x": 440, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ A（黒）" }
+    "PopupA.dc.html": { "x": 0, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ" }
   },
-  "order": ["Main.dc.html", "NewTabB.dc.html", "NewTabEmpty.dc.html", "PopupA.dc.html", "PopupA2.dc.html"],
+  "order": ["Main.dc.html", "NewTabLight.dc.html", "NewTabEmpty.dc.html", "PopupA.dc.html"],
   "notes": {
     "rowNewTab": { "x": 0, "y": -300, "text": "新しいタブ", "kind": "title1", "maxW": 4000, "w": 240 },
-    "rowPopup": { "x": 0, "y": 1000, "text": "ツールバーのポップアップ", "kind": "title1", "maxW": 800, "w": 240 }
+    "rowPopup": { "x": 0, "y": 1000, "text": "ツールバーのポップアップ", "kind": "title1", "maxW": 360, "w": 240 }
   },
   "designSystems": []
 }
