@@ -10,28 +10,47 @@
       overflow: hidden;
       background: #000;
     }
-    iframe {
+    #player iframe {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       border: 0;
     }
+    /* 試作の確認用パネル（試作が終わったら消す） */
+    #debug {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 360px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font: 13px/1.6 system-ui, sans-serif;
+    }
+    #debug dl { display: grid; grid-template-columns: 80px 1fr; margin: 0 0 8px; }
+    #debug dd { margin: 0; overflow-wrap: anywhere; }
+    #debug ul { margin: 8px 0 0; padding-left: 16px; max-height: 200px; overflow: auto; font-size: 12px; }
   </style>
 </head>
 <body>
-  <!--
-    動作確認用。VIDEO_ID の部分を差し替えると別の動画で試せます。
-    autoplay=1 : 自動再生（ミュートが必須）
-    mute=1     : ミュート
-    loop=1 + playlist=同じID : 1本をループ再生
-    controls=0 : 操作バーを隠す
-    newtabbg=1 : 目印。rules.json がこれを見て Referer を付ける
-  -->
-  <iframe
-    src="https://www.youtube.com/embed/OWDcn7hl16A?autoplay=1&mute=1&loop=1&playlist=OWDcn7hl16A&controls=0&newtabbg=1"
-    allow="autoplay; encrypted-media"
-    allowfullscreen>
-  </iframe>
+  <div id="player"></div>
+
+  <div id="debug">
+    <dl>
+      <dt>動画名</dt><dd id="title">-</dd>
+      <dt>位置</dt><dd id="index">-</dd>
+      <dt>音</dt><dd id="muted">-</dd>
+      <dt>音量</dt><dd id="volume-value">-</dd>
+    </dl>
+    <button id="unmute">ミュート解除</button>
+    <button id="mute">ミュート</button>
+    <button id="next">次へ</button>
+    <input id="volume" type="range" min="0" max="100" value="50">
+    <ul id="log"></ul>
+  </div>
+
+  <script type="module" src="newtab.js"></script>
 </body>
 </html>
