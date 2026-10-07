@@ -16,11 +16,25 @@ function log(message) {
 }
 
 function showInfo(info) {
-  $('title').textContent = info.videoData?.title ?? '-';
   $('index').textContent =
     info.playlist ? `${(info.playlistIndex ?? 0) + 1} / ${info.playlist.length}` : '-';
   $('muted').textContent = info.muted === undefined ? '-' : info.muted ? 'ミュート中' : '音あり';
   $('volume-value').textContent = info.volume ?? '-';
+}
+
+// ---- パネル（DESIGN.md 4-1a） ----
+function showVideo({ video_id, title }) {
+  if (!title) return;
+  $('title').textContent = title;
+  $('title').href = `https://www.youtube.com/watch?v=${video_id}`;
+  $('panel').hidden = false;
+}
+
+function showMuted(muted) {
+  // SVG 要素には hidden プロパティがないので、属性を直接切り替える
+  $('icon-muted').toggleAttribute('hidden', !muted);
+  $('icon-sound').toggleAttribute('hidden', muted);
+  $('mute').setAttribute('aria-label', muted ? 'ミュート解除' : 'ミュート');
 }
 
 // ---- プレーヤー ----
@@ -31,6 +45,11 @@ const player = createPlayer($('player'), {
   onReady: () => log('onReady'),
   onInfo: (info, changed) => {
     showInfo(info);
+    if (changed.videoData) showVideo(changed.videoData);
+    if ('muted' in changed) showMuted(changed.muted);
+    // つまみを動かしている最中は、届いた値で上書きしない
+    if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
+
     if ('playlist' in changed) log(`プレイリスト ${changed.playlist?.length ?? 0} 本`);
     if (changed.videoData?.title) log(`動画名: ${changed.videoData.title}`);
 
@@ -47,7 +66,9 @@ const player = createPlayer($('player'), {
   onError: (code) => log(`onError: ${code}`),
 });
 
-$('unmute').addEventListener('click', () => player.unMute());
-$('mute').addEventListener('click', () => player.mute());
+$('mute').addEventListener('click', () => (player.info.muted ? player.unMute() : player.mute()));
 $('next').addEventListener('click', () => player.nextVideo());
-$('volume').addEventListener('input', (e) => player.setVolume(Number(e.target.value)));
+$('volume').addEventListener('input', (e) => {
+  player.setVolume(Number(e.target.value));
+  if (player.info.muted) player.unMute();
+});

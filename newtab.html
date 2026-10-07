@@ -32,6 +32,57 @@
       inset: 0;
       background: rgba(0, 0, 0, var(--dim));
     }
+    /* 動画名と音量のパネル（DESIGN.md 4-1a） */
+    #panel {
+      position: fixed;
+      left: 40px;
+      bottom: 40px;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-radius: 16px;
+      background: rgba(14, 16, 22, 0.55);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      font-family: system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif;
+    }
+    #panel[hidden] { display: none; }
+    #title {
+      overflow: hidden;
+      white-space: nowrap;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-decoration: none;
+    }
+    #title:hover { color: #dfe6ef; }
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #mute {
+      width: 44px;
+      height: 44px;
+      margin-left: -8px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #mute svg[hidden] { display: none; }
+    #volume {
+      width: 234px;
+      margin: 0;
+      accent-color: #fff;
+    }
     /* 試作の確認用パネル（試作が終わったら消す） */
     #debug {
       position: fixed;
@@ -53,17 +104,24 @@
   <div id="player"></div>
   <div id="dim"></div>
 
+  <div id="panel" hidden>
+    <a id="title" href="https://www.youtube.com/"></a>
+    <div id="controls">
+      <button id="mute" type="button" aria-label="ミュート解除">
+        <svg id="icon-muted" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+        <svg id="icon-sound" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+      </button>
+      <input id="volume" type="range" min="0" max="100" value="50" aria-label="音量">
+    </div>
+  </div>
+
   <div id="debug">
     <dl>
-      <dt>動画名</dt><dd id="title">-</dd>
       <dt>位置</dt><dd id="index">-</dd>
       <dt>音</dt><dd id="muted">-</dd>
       <dt>音量</dt><dd id="volume-value">-</dd>
     </dl>
-    <button id="unmute">ミュート解除</button>
-    <button id="mute">ミュート</button>
     <button id="next">次へ</button>
-    <input id="volume" type="range" min="0" max="100" value="50">
     <ul id="log"></ul>
   </div>
 
