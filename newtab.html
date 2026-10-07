@@ -4,18 +4,33 @@
   <meta charset="UTF-8">
   <title>新しいタブ</title>
   <style>
+    :root {
+      /* 後でポップアップの設定に置き換える（DESIGN.md 4-4） */
+      --blur: 16px;
+      --dim: 0.35;
+    }
     html, body {
       margin: 0;
       height: 100%;
       overflow: hidden;
       background: #000;
     }
+    /* 16:9 の動画で画面を覆う（DESIGN.md 4-2）。ぼかしで端が透けないよう、ぼかしの分だけ大きくする */
     #player iframe {
       position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      top: 50%;
+      left: 50%;
+      width: calc(max(100vw, 100vh * 16 / 9) + var(--blur) * 4);
+      height: calc(max(100vh, 100vw * 9 / 16) + var(--blur) * 4);
+      transform: translate(-50%, -50%);
       border: 0;
+      filter: blur(var(--blur));
+      pointer-events: none; /* YouTube のタイトルやボタンを出さない（DESIGN.md 4-3） */
+    }
+    #dim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, var(--dim));
     }
     /* 試作の確認用パネル（試作が終わったら消す） */
     #debug {
@@ -36,6 +51,7 @@
 </head>
 <body>
   <div id="player"></div>
+  <div id="dim"></div>
 
   <div id="debug">
     <dl>
