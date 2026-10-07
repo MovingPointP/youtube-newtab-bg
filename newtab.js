@@ -30,10 +30,11 @@ function showVideo({ video_id, title }) {
   $('panel').hidden = false;
 }
 
-function showMuted(muted) {
+function showMuted({ muted, volume }) {
+  const silent = muted || volume === 0;
   // SVG 要素には hidden プロパティがないので、属性を直接切り替える
-  $('icon-muted').toggleAttribute('hidden', !muted);
-  $('icon-sound').toggleAttribute('hidden', muted);
+  $('icon-muted').toggleAttribute('hidden', !silent);
+  $('icon-sound').toggleAttribute('hidden', silent);
   $('mute').setAttribute('aria-label', muted ? 'ミュート解除' : 'ミュート');
 }
 
@@ -46,7 +47,7 @@ const player = createPlayer($('player'), {
   onInfo: (info, changed) => {
     showInfo(info);
     if (changed.videoData) showVideo(changed.videoData);
-    if ('muted' in changed) showMuted(changed.muted);
+    if ('muted' in changed || 'volume' in changed) showMuted(info);
     // つまみを動かしている最中は、届いた値で上書きしない
     if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
 
@@ -66,7 +67,10 @@ const player = createPlayer($('player'), {
   onError: (code) => log(`onError: ${code}`),
 });
 
-$('mute').addEventListener('click', () => (player.info.muted ? player.unMute() : player.mute()));
+$('mute').addEventListener('click', () => {
+  if (player.info.volume === 0) return; // 解除すると YouTube が音量を 5 にしてしまうので、何もしない
+  player.info.muted ? player.unMute() : player.mute();
+});
 $('next').addEventListener('click', () => player.nextVideo());
 $('volume').addEventListener('input', (e) => {
   player.setVolume(Number(e.target.value));
