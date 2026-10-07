@@ -41,13 +41,18 @@ function showMuted({ muted, volume }) {
 // ---- プレーヤー ----
 let started = false;
 
+// 連打しても古い状態で判断しないよう、YouTube から届くのを待たずに手元で先に書き換える
+const sound = { muted: true, volume: undefined };
+
 const player = createPlayer($('player'), {
   playlistId: PLAYLIST_ID,
   onReady: () => log('onReady'),
   onInfo: (info, changed) => {
     showInfo(info);
     if (changed.videoData) showVideo(changed.videoData);
-    if ('muted' in changed || 'volume' in changed) showMuted(info);
+    if ('muted' in changed) sound.muted = changed.muted;
+    if ('volume' in changed) sound.volume = changed.volume;
+    if ('muted' in changed || 'volume' in changed) showMuted(sound);
     // つまみを動かしている最中は、届いた値で上書きしない
     if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
 
@@ -68,11 +73,19 @@ const player = createPlayer($('player'), {
 });
 
 $('mute').addEventListener('click', () => {
-  if (player.info.volume === 0) return; // 解除すると YouTube が音量を 5 にしてしまうので、何もしない
-  player.info.muted ? player.unMute() : player.mute();
+  if (sound.volume === 0) return; // 解除すると YouTube が音量を 5 にしてしまうので、何もしない
+  sound.muted = !sound.muted;
+  sound.muted ? player.mute() : player.unMute();
+  showMuted(sound);
 });
 $('next').addEventListener('click', () => player.nextVideo());
 $('volume').addEventListener('input', (e) => {
-  player.setVolume(Number(e.target.value));
-  if (player.info.muted) player.unMute();
+  sound.volume = Number(e.target.value);
+  player.setVolume(sound.volume);
+  // 0 のまま解除すると YouTube が音量を 5 にしてしまうので、0 より大きいときだけ
+  if (sound.muted && sound.volume > 0) {
+    sound.muted = false;
+    player.unMute();
+  }
+  showMuted(sound);
 });
