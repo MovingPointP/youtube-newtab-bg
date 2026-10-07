@@ -49,8 +49,9 @@
       font-family: system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif;
     }
     #panel[hidden] { display: none; }
+    #title-box { overflow: hidden; }
     #title {
-      overflow: hidden;
+      display: inline-block;
       white-space: nowrap;
       color: #fff;
       font-size: 22px;
@@ -59,6 +60,12 @@
       text-decoration: none;
     }
     #title:hover { color: #dfe6ef; }
+    /* 収まらない動画名を流す（DESIGN.md 4-1b）。--shift と --duration は newtab.js が入れる */
+    #title.scrolling { animation: marquee var(--duration) linear infinite; }
+    @keyframes marquee {
+      0%, 15% { transform: translateX(0); }
+      85%, 100% { transform: translateX(var(--shift)); }
+    }
     #controls {
       display: flex;
       align-items: center;
@@ -105,7 +112,7 @@
   <div id="dim"></div>
 
   <div id="panel" hidden>
-    <a id="title" href="https://www.youtube.com/"></a>
+    <div id="title-box"><a id="title" href="https://www.youtube.com/"></a></div>
     <div id="controls">
       <button id="mute" type="button" aria-label="ミュート解除">
         <svg id="icon-muted" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>

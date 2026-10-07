@@ -28,6 +28,21 @@ function showVideo({ video_id, title }) {
   $('title').textContent = title;
   $('title').href = `https://www.youtube.com/watch?v=${video_id}`;
   $('panel').hidden = false;
+  scrollTitleIfLong();
+}
+
+const SCROLL_SPEED = 40; // px/秒
+
+function scrollTitleIfLong() {
+  const title = $('title');
+  title.classList.remove('scrolling');
+  const overflow = title.scrollWidth - $('title-box').clientWidth;
+  if (overflow <= 0) return;
+  title.style.setProperty('--shift', `${-overflow}px`);
+  // 動いている時間は全体の 70%（前後 15% ずつ止まる）。少しだけはみ出すときも、止まる時間を確保する
+  title.style.setProperty('--duration', `${Math.max(overflow / SCROLL_SPEED / 0.7, 5)}s`);
+  void title.offsetWidth; // 動画が変わったとき、最初から流し直す
+  title.classList.add('scrolling');
 }
 
 function showMuted({ muted, volume }) {
