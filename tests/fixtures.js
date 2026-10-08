@@ -16,7 +16,8 @@ export const test = base.extend({
     await context.close();
   },
   page: async ({ context }, use) => {
-    const page = await context.newPage();
+    // 起動時に開く空のタブを使う（別に開くと、空のタブのスクリーンショットも残るため）
+    const page = context.pages()[0] ?? (await context.newPage());
     await page.goto('chrome://newtab/');
     await use(page);
   },
