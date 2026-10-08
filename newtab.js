@@ -83,8 +83,17 @@ const player = createPlayer($('player'), {
       log(`シャッフル=${SHUFFLE}、${index + 1} 本目から再生`);
     }
   },
-  onStateChange: (state) => log(`onStateChange: ${state}`),
+  onStateChange: (state) => {
+    log(`onStateChange: ${state}`);
+    // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
+    if (state === 1 && document.hidden) player.pause();
+  },
   onError: (code) => log(`onError: ${code}`),
+});
+
+// 裏に回ったら一時停止し、表示されたら続きから再生する（DESIGN.md 2-4）
+document.addEventListener('visibilitychange', () => {
+  document.hidden ? player.pause() : player.play();
 });
 
 $('mute').addEventListener('click', () => {
