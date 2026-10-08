@@ -1,2 +1,7 @@
 # Chrome が拡張の読み込み時に自動生成する
 _metadata/
+
+# テスト（npm install と Playwright が作る）
+node_modules/
+test-results/
+playwright-report/
