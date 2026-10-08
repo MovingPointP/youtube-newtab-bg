@@ -91,6 +91,7 @@ export function createPlayer(container, { playlistId, onReady, onInfo, onStateCh
     unMute: () => command('unMute'),
     setVolume: (volume) => command('setVolume', volume),
     setShuffle: (shuffle) => command('setShuffle', shuffle),
+    setLoop: (loop) => command('setLoop', loop),
     playVideoAt: (index) => command('playVideoAt', index),
     nextVideo: () => command('nextVideo'),
   };

@@ -78,6 +78,7 @@ const player = createPlayer($('player'), {
     if (!started && info.playlist?.length) {
       started = true;
       player.setShuffle(SHUFFLE);
+      player.setLoop(true); // 最後まで行ったら最初に戻る
       const index = Math.floor(Math.random() * info.playlist.length);
       player.playVideoAt(index);
       log(`シャッフル=${SHUFFLE}、${index + 1} 本目から再生`);
@@ -120,6 +121,7 @@ $('mute').addEventListener('click', () => {
   showMuted(sound);
 });
 $('next').addEventListener('click', () => player.nextVideo());
+$('last').addEventListener('click', () => player.playVideoAt(player.info.playlist.length - 1));
 $('volume').addEventListener('input', (e) => {
   sound.volume = Number(e.target.value);
   player.setVolume(sound.volume);
