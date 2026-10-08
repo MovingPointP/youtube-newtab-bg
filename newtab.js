@@ -85,11 +85,28 @@ const player = createPlayer($('player'), {
   },
   onStateChange: (state) => {
     log(`onStateChange: ${state}`);
+    if (state === 1) errorCount = 0;
     // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
     if (state === 1 && document.hidden) player.pause();
   },
-  onError: (code) => log(`onError: ${code}`),
+  onError: (code) => {
+    log(`onError: ${code}`);
+    skipBrokenVideo();
+  },
 });
+
+// 埋め込み禁止・非公開・削除済みなどの動画は飛ばす（DESIGN.md 2-5）。
+// 全部再生できないときに飛ばし続けないよう、続けて失敗した回数を数える
+let errorCount = 0;
+
+function skipBrokenVideo() {
+  errorCount++;
+  if (errorCount >= (player.info.playlist?.length ?? 1)) {
+    log('再生できる動画がないため停止');
+    return;
+  }
+  player.nextVideo();
+}
 
 // 裏に回ったら一時停止し、表示されたら続きから再生する（DESIGN.md 2-4）
 document.addEventListener('visibilitychange', () => {
