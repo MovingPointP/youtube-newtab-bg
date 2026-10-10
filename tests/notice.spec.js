@@ -7,7 +7,7 @@ test.describe('オフライン', () => {
     await setSettings({ playlistId: NASA_PLAYLIST.id, playlistTitle: NASA_PLAYLIST.title });
     const page = context.pages()[0];
     await context.setOffline(true);
-    await page.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await page.goto(`chrome-extension://${extensionId}/newtab.html?debug`);
     await expect(page.locator('#empty')).toBeVisible();
     await expect(page.locator('#empty')).toContainText('オフラインです');
     await expect(page.locator('#player iframe')).toHaveCount(0);

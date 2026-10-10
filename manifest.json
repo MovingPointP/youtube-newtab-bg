@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Lumelo",
-  "version": "0.0.2",
-  "description": "新しいタブの背景で YouTube 動画を再生できるか確かめるための最小構成",
+  "version": "1.0.0",
+  "description": "新しいタブで YouTube のプレイリストを、ぼかした背景として流します。音を出せば BGM にもなります。",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

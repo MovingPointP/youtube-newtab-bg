@@ -3,7 +3,9 @@ import { loadSettings, saveSettings, onSettingsChanged } from './settings.js';
 
 const $ = (id) => document.getElementById(id);
 
-// ---- 確認用パネル（試作が終わったら消す） ----
+// ---- 確認用パネル。URL に ?debug を付けたときだけ出す（自動テストもこれを読む） ----
+$('debug').hidden = !new URLSearchParams(location.search).has('debug');
+
 function log(message) {
   const li = document.createElement('li');
   li.textContent = `${new Date().toLocaleTimeString()} ${message}`;

@@ -47,7 +47,7 @@ export const test = base.extend({
   page: async ({ context, extensionId, playlist, setSettings }, use) => {
     if (playlist) await setSettings({ playlistId: playlist.id, playlistTitle: playlist.title });
     const page = context.pages()[0];
-    await page.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await page.goto(`chrome-extension://${extensionId}/newtab.html?debug`);
     await use(page);
   },
 

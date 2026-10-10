@@ -111,7 +111,7 @@
       margin: 0;
       accent-color: #fff;
     }
-    /* 試作の確認用パネル（試作が終わったら消す） */
+    /* 確認用パネル。URL に ?debug を付けたときだけ出す（自動テストもこれを読む） */
     #debug {
       position: fixed;
       top: 16px;
@@ -149,7 +149,7 @@
     </div>
   </div>
 
-  <div id="debug">
+  <div id="debug" hidden>
     <dl>
       <dt>位置</dt><dd id="index">-</dd>
       <dt>音</dt><dd id="muted">-</dd>

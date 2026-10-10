@@ -90,6 +90,13 @@ test.describe('見た目', () => {
     expect(rules[0].condition.initiatorDomains).toEqual([await page.evaluate(() => chrome.runtime.id)]);
   });
 
+  test('確認用パネルは、URL に ?debug を付けたときだけ出す', async ({ page, extensionId }) => {
+    await expect(page.locator('#debug')).toBeVisible();
+    await page.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await expect(page.locator('#debug')).toBeHidden();
+    await expect(page.locator('#panel')).toBeVisible({ timeout: 30_000 });
+  });
+
   test('動画はマウス操作に反応しない', async ({ page }) => {
     await expect(page.locator('#player iframe')).toHaveCSS('pointer-events', 'none');
   });
@@ -114,7 +121,7 @@ test.describe('音', () => {
     await expect(debug.volume(page)).toHaveText('30');
 
     const next = await context.newPage();
-    await next.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await next.goto(`chrome-extension://${extensionId}/newtab.html?debug`);
     await waitForPlaying(next);
     await expect(debug.volume(next)).toHaveText('30');
     await expect(next.locator('#volume')).toHaveValue('30');
@@ -124,7 +131,7 @@ test.describe('音', () => {
 
   test('音量は、開いている他の新しいタブには反映しない', async ({ page, context, extensionId }) => {
     const other = await context.newPage();
-    await other.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await other.goto(`chrome-extension://${extensionId}/newtab.html?debug`);
     await waitForPlaying(other);
 
     await page.bringToFront();
