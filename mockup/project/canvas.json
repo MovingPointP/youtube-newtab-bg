@@ -1,20 +1,84 @@
 {
   "v": 3,
   "attachments": {},
-  "createdOnFiles": { "v": 1, "at": "2026-10-07T00:00:00Z" },
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-07T00:00:00Z"
+  },
   "title": "YouTube New Tab Background モック",
-  "launch": { "view": "canvas" },
+  "launch": {
+    "view": "canvas"
+  },
   "pages": [],
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ（長いタイトル）" },
-    "NewTabShort.dc.html": { "x": 1360, "y": 0, "w": 1280, "h": 800, "title": "新しいタブ（短いタイトル）" },
-    "NewTabEmpty.dc.html": { "x": 2720, "y": 0, "w": 1280, "h": 800, "title": "未登録・エラー時" },
-    "PopupA.dc.html": { "x": 0, "y": 1300, "w": 360, "h": 600, "title": "ポップアップ" }
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "title": "新しいタブ（長いタイトル）"
+    },
+    "NewTabShort.dc.html": {
+      "x": 1360,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "title": "新しいタブ（短いタイトル）"
+    },
+    "NewTabEmpty.dc.html": {
+      "x": 2720,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "title": "未登録・エラー時"
+    },
+    "PopupA.dc.html": {
+      "x": 0,
+      "y": 1300,
+      "w": 360,
+      "h": 600,
+      "title": "ポップアップ"
+    },
+    "IconE.dc.html": {
+      "x": 0,
+      "y": 2300,
+      "w": 640,
+      "h": 400,
+      "title": "アイコン"
+    }
   },
-  "order": ["Main.dc.html", "NewTabShort.dc.html", "NewTabEmpty.dc.html", "PopupA.dc.html"],
+  "order": [
+    "Main.dc.html",
+    "NewTabShort.dc.html",
+    "NewTabEmpty.dc.html",
+    "PopupA.dc.html",
+    "IconE.dc.html"
+  ],
   "notes": {
-    "rowNewTab": { "x": 0, "y": -300, "text": "新しいタブ", "kind": "title1", "maxW": 4000, "w": 240 },
-    "rowPopup": { "x": 0, "y": 1000, "text": "ツールバーのポップアップ", "kind": "title1", "maxW": 360, "w": 240 }
+    "rowNewTab": {
+      "x": 0,
+      "y": -300,
+      "text": "新しいタブ",
+      "kind": "title1",
+      "maxW": 4000,
+      "w": 240
+    },
+    "rowPopup": {
+      "x": 0,
+      "y": 1000,
+      "text": "ツールバーのポップアップ",
+      "kind": "title1",
+      "maxW": 360,
+      "w": 240
+    },
+    "rowIcon": {
+      "x": 0,
+      "y": 2000,
+      "text": "アイコン",
+      "kind": "title1",
+      "maxW": 640,
+      "w": 240
+    }
   },
   "designSystems": []
 }

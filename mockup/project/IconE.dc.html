@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>アイコン E ぼかしの窓</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 640px; height: 400px; box-sizing: border-box; padding: 40px; background: #ffffff; font-family: system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif; color: #1d2129; display: flex; gap: 48px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 14px; align-items: center">
+<svg width="240" height="240" viewBox="0 0 128 128" role="img" aria-label="アイコン E"><defs><clipPath id="e-clip"><rect width="128" height="128" rx="28"></rect></clipPath><filter id="e-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"></feGaussianBlur></filter></defs><g clip-path="url(#e-clip)"><rect width="128" height="128" fill="#241d3a"></rect><g filter="url(#e-blur)"><circle cx="40" cy="38" r="30" fill="#f2a65a"></circle><circle cx="96" cy="50" r="28" fill="#5f7fd6"></circle><circle cx="70" cy="100" r="30" fill="#c26aa6"></circle></g><rect x="16" y="82" width="64" height="28" rx="9" fill="#0e1120" fill-opacity="0.75"></rect><rect x="25" y="93" width="38" height="6" rx="3" fill="#ffffff"></rect></g></svg>
+<div style="font-size: 14px; font-weight: 600">E. ぼかしの窓</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; gap: 18px; align-items: flex-end">
+<sc-for list="{{sizes}}" as="s" hint-placeholder-count="4">
+<svg width="{{s}}" height="{{s}}" viewBox="0 0 128 128" aria-hidden="true"><g clip-path="url(#e-clip)"><rect width="128" height="128" fill="#241d3a"></rect><g filter="url(#e-blur)"><circle cx="40" cy="38" r="30" fill="#f2a65a"></circle><circle cx="96" cy="50" r="28" fill="#5f7fd6"></circle><circle cx="70" cy="100" r="30" fill="#c26aa6"></circle></g><rect x="16" y="82" width="64" height="28" rx="9" fill="#0e1120" fill-opacity="0.75"></rect><rect x="25" y="93" width="38" height="6" rx="3" fill="#ffffff"></rect></g></svg>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #f1f3f4; font-size: 12px; color: #3c4043"><svg width="16" height="16" viewBox="0 0 128 128" aria-hidden="true"><g clip-path="url(#e-clip)"><rect width="128" height="128" fill="#241d3a"></rect><g filter="url(#e-blur)"><circle cx="40" cy="38" r="30" fill="#f2a65a"></circle><circle cx="96" cy="50" r="28" fill="#5f7fd6"></circle><circle cx="70" cy="100" r="30" fill="#c26aa6"></circle></g><rect x="16" y="82" width="64" height="28" rx="9" fill="#0e1120" fill-opacity="0.75"></rect><rect x="25" y="93" width="38" height="6" rx="3" fill="#ffffff"></rect></g></svg>ツールバー（明るいテーマ）</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #35363a; font-size: 12px; color: #e8eaed"><svg width="16" height="16" viewBox="0 0 128 128" aria-hidden="true"><g clip-path="url(#e-clip)"><rect width="128" height="128" fill="#241d3a"></rect><g filter="url(#e-blur)"><circle cx="40" cy="38" r="30" fill="#f2a65a"></circle><circle cx="96" cy="50" r="28" fill="#5f7fd6"></circle><circle cx="70" cy="100" r="30" fill="#c26aa6"></circle></g><rect x="16" y="82" width="64" height="28" rx="9" fill="#0e1120" fill-opacity="0.75"></rect><rect x="25" y="93" width="38" height="6" rx="3" fill="#ffffff"></rect></g></svg>ツールバー（暗いテーマ）</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":640,"height":400}}'>
+class Component extends DCLogic {
+renderVals() {
+return { sizes: [128, 48, 32, 16] };
+}
+}
+</script>
+</body>
+</html>

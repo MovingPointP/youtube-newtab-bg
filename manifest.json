@@ -3,12 +3,28 @@
   "name": "Lumelo",
   "version": "0.0.2",
   "description": "新しいタブの背景で YouTube 動画を再生できるか確かめるための最小構成",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
-  "permissions": ["declarativeNetRequest", "storage", "activeTab"],
-  "host_permissions": ["https://www.youtube.com/*"]
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ]
 }
