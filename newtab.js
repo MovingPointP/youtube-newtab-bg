@@ -1,9 +1,5 @@
 import { createPlayer } from './player.js';
-
-// 試作用の値（後でポップアップの設定に置き換える）
-// テストには公開プレイリストを使う（DESIGN.md 6-2）: NASA Video「NASA Ultra High Definition Video UHD」
-const PLAYLIST_ID = 'PLiuUQ9asub3RaYzGhx3Bsxi1NPOnuBm_T';
-const SHUFFLE = true; // false で連続再生
+import { loadSettings, onSettingsChanged } from './settings.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -53,82 +49,110 @@ function showMuted({ muted, volume }) {
   $('mute').setAttribute('aria-label', muted ? 'ミュート解除' : 'ミュート');
 }
 
-// ---- プレーヤー ----
-let started = false;
-
-// 連打しても古い状態で判断しないよう、YouTube から届くのを待たずに手元で先に書き換える
-const sound = { muted: true, volume: undefined };
-
-const player = createPlayer($('player'), {
-  playlistId: PLAYLIST_ID,
-  onReady: () => log('onReady'),
-  onInfo: (info, changed) => {
-    showInfo(info);
-    if (changed.videoData) showVideo(changed.videoData);
-    if ('muted' in changed) sound.muted = changed.muted;
-    if ('volume' in changed) sound.volume = changed.volume;
-    if ('muted' in changed || 'volume' in changed) showMuted(sound);
-    // つまみを動かしている最中は、届いた値で上書きしない
-    if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
-
-    if ('playlist' in changed) log(`プレイリスト ${changed.playlist?.length ?? 0} 本`);
-    if (changed.videoData?.title) log(`動画名: ${changed.videoData.title}`);
-
-    // プレイリストの本数が分かったら、シャッフルを設定してランダムな位置から始める（DESIGN.md 2-2, 2-3）
-    if (!started && info.playlist?.length) {
-      started = true;
-      player.setShuffle(SHUFFLE);
-      player.setLoop(true); // 最後まで行ったら最初に戻る
-      const index = Math.floor(Math.random() * info.playlist.length);
-      player.playVideoAt(index);
-      log(`シャッフル=${SHUFFLE}、${index + 1} 本目から再生`);
-    }
-  },
-  onStateChange: (state) => {
-    log(`onStateChange: ${state}`);
-    if (state === 1) errorCount = 0;
-    // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
-    if (state === 1 && document.hidden) player.pause();
-  },
-  onError: (code) => {
-    log(`onError: ${code}`);
-    skipBrokenVideo();
-  },
-});
-
-// 埋め込み禁止・非公開・削除済みなどの動画は飛ばす（DESIGN.md 2-5）。
-// 全部再生できないときに飛ばし続けないよう、続けて失敗した回数を数える
-let errorCount = 0;
-
-function skipBrokenVideo() {
-  errorCount++;
-  if (errorCount >= (player.info.playlist?.length ?? 1)) {
-    log('再生できる動画がないため停止');
-    return;
-  }
-  player.nextVideo();
+// ---- ぼかしと暗さ（DESIGN.md 4-4） ----
+function applyLook({ blur, dim }) {
+  if (blur !== undefined) document.documentElement.style.setProperty('--blur', `${blur}px`);
+  if (dim !== undefined) document.documentElement.style.setProperty('--dim', dim);
 }
 
-// 裏に回ったら一時停止し、表示されたら続きから再生する（DESIGN.md 2-4）
-document.addEventListener('visibilitychange', () => {
-  document.hidden ? player.pause() : player.play();
-});
+// ---- プレーヤー ----
+function startPlayer({ playlistId, shuffle }) {
+  let started = false;
 
-$('mute').addEventListener('click', () => {
-  if (sound.volume === 0) return; // 解除すると YouTube が音量を 5 にしてしまうので、何もしない
-  sound.muted = !sound.muted;
-  sound.muted ? player.mute() : player.unMute();
-  showMuted(sound);
-});
-$('next').addEventListener('click', () => player.nextVideo());
-$('last').addEventListener('click', () => player.playVideoAt(player.info.playlist.length - 1));
-$('volume').addEventListener('input', (e) => {
-  sound.volume = Number(e.target.value);
-  player.setVolume(sound.volume);
-  // 0 のまま解除すると YouTube が音量を 5 にしてしまうので、0 より大きいときだけ
-  if (sound.muted && sound.volume > 0) {
-    sound.muted = false;
-    player.unMute();
+  // 連打しても古い状態で判断しないよう、YouTube から届くのを待たずに手元で先に書き換える
+  const sound = { muted: true, volume: undefined };
+
+  const player = createPlayer($('player'), {
+    playlistId,
+    onReady: () => log('onReady'),
+    onInfo: (info, changed) => {
+      showInfo(info);
+      if (changed.videoData) showVideo(changed.videoData);
+      if ('muted' in changed) sound.muted = changed.muted;
+      if ('volume' in changed) sound.volume = changed.volume;
+      if ('muted' in changed || 'volume' in changed) showMuted(sound);
+      // つまみを動かしている最中は、届いた値で上書きしない
+      if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
+
+      if ('playlist' in changed) log(`プレイリスト ${changed.playlist?.length ?? 0} 本`);
+      if (changed.videoData?.title) log(`動画名: ${changed.videoData.title}`);
+
+      // プレイリストの本数が分かったら、シャッフルを設定してランダムな位置から始める（DESIGN.md 2-2, 2-3）
+      if (!started && info.playlist?.length) {
+        started = true;
+        player.setShuffle(shuffle);
+        player.setLoop(true); // 最後まで行ったら最初に戻る
+        const index = Math.floor(Math.random() * info.playlist.length);
+        player.playVideoAt(index);
+        log(`シャッフル=${shuffle}、${index + 1} 本目から再生`);
+      }
+    },
+    onStateChange: (state) => {
+      log(`onStateChange: ${state}`);
+      if (state === 1) errorCount = 0;
+      // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
+      if (state === 1 && document.hidden) player.pause();
+    },
+    onError: (code) => {
+      log(`onError: ${code}`);
+      skipBrokenVideo();
+    },
+  });
+
+  // 埋め込み禁止・非公開・削除済みなどの動画は飛ばす（DESIGN.md 2-5）。
+  // 全部再生できないときに飛ばし続けないよう、続けて失敗した回数を数える
+  let errorCount = 0;
+
+  function skipBrokenVideo() {
+    errorCount++;
+    if (errorCount >= (player.info.playlist?.length ?? 1)) {
+      log('再生できる動画がないため停止');
+      return;
+    }
+    player.nextVideo();
   }
-  showMuted(sound);
+
+  // 裏に回ったら一時停止し、表示されたら続きから再生する（DESIGN.md 2-4）
+  document.addEventListener('visibilitychange', () => {
+    document.hidden ? player.pause() : player.play();
+  });
+
+  $('mute').addEventListener('click', () => {
+    if (sound.volume === 0) return; // 解除すると YouTube が音量を 5 にしてしまうので、何もしない
+    sound.muted = !sound.muted;
+    sound.muted ? player.mute() : player.unMute();
+    showMuted(sound);
+  });
+  $('next').addEventListener('click', () => player.nextVideo());
+  $('last').addEventListener('click', () => player.playVideoAt(player.info.playlist.length - 1));
+  $('volume').addEventListener('input', (e) => {
+    sound.volume = Number(e.target.value);
+    player.setVolume(sound.volume);
+    // 0 のまま解除すると YouTube が音量を 5 にしてしまうので、0 より大きいときだけ
+    if (sound.muted && sound.volume > 0) {
+      sound.muted = false;
+      player.unMute();
+    }
+    showMuted(sound);
+  });
+
+  return player;
+}
+
+// ---- 設定を読み込んで始める（DESIGN.md 5-3） ----
+const settings = await loadSettings();
+applyLook(settings);
+
+// プレイリストが未登録なら、案内を出す（DESIGN.md 4-5）
+const player = settings.playlistId ? startPlayer(settings) : null;
+$('empty').hidden = Boolean(player);
+
+// ポップアップで設定を変えたら、開いている新しいタブにもその場で反映する
+onSettingsChanged((changed) => {
+  if ('playlistId' in changed) {
+    location.reload(); // プレイリストが変わったら、最初から読み込み直す
+    return;
+  }
+  applyLook(changed);
+  if ('shuffle' in changed) player?.setShuffle(changed.shuffle);
 });

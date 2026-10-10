@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>設定</title>
+  <!-- 見た目は mockup/project/PopupA.dc.html（DESIGN.md 5-1a） -->
+  <style>
+    body {
+      width: 360px;
+      margin: 0;
+      background: #fff;
+      color: #1d2129;
+      font: 13px/1.5 system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif;
+    }
+    header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #e6e8ec;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e6e8ec;
+    }
+    section:last-child { border-bottom: 0; }
+    h2 {
+      margin: 0;
+      color: #545b66;
+      font-size: 12px;
+    }
+    .note {
+      color: #5f6672;
+      font-size: 11px;
+      text-align: center;
+    }
+    #current {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #f3f5f8;
+    }
+    #current-label { color: #5f6672; font-size: 11px; }
+    #current-title { font-weight: 600; overflow-wrap: anywhere; }
+    button {
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { cursor: default; opacity: 0.4; }
+    #use-tab {
+      height: 40px;
+      border: 0;
+      border-radius: 8px;
+      background: #1d2129;
+      color: #fff;
+    }
+    .row { display: flex; gap: 8px; }
+    #url {
+      flex: 1;
+      min-width: 0;
+      height: 36px;
+      box-sizing: border-box;
+      padding: 0 10px;
+      border: 1px solid #c9ced6;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 12px;
+    }
+    #register {
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid #c9ced6;
+      border-radius: 8px;
+      background: #fff;
+      color: #1d2129;
+    }
+    #message { min-height: 1.5em; margin: 0; font-size: 12px; }
+    #message.error { color: #b42318; }
+    #message.ok { color: #1f7a3d; }
+    /* 再生順の切り替え */
+    #order {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin: 0;
+      padding: 3px;
+      border: 0;
+      border-radius: 8px;
+      background: #eef0f3;
+    }
+    #order label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      border-radius: 6px;
+      color: #545b66;
+      cursor: pointer;
+    }
+    #order input { position: absolute; opacity: 0; }
+    #order label:has(input:checked) {
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+      color: #1d2129;
+      font-weight: 600;
+    }
+    #order label:has(input:focus-visible) { outline: 2px solid #1d2129; }
+    .slider {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 36px;
+      align-items: center;
+      gap: 10px;
+    }
+    .slider input { accent-color: #1d2129; }
+    .slider output { color: #5f6672; text-align: right; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+  </style>
+</head>
+<body>
+  <header>YouTube New Tab Background</header>
+
+  <section>
+    <h2>プレイリスト</h2>
+    <div id="current">
+      <span id="current-label">登録中</span>
+      <span id="current-title">未登録</span>
+    </div>
+    <button id="use-tab" type="button" disabled>このプレイリストを使う</button>
+    <div id="use-tab-note" class="note">YouTube でプレイリストを開くと使えます</div>
+    <div class="note">または URL を貼り付け</div>
+    <form id="url-form" class="row">
+      <label class="visually-hidden" for="url">プレイリストの URL</label>
+      <input id="url" type="url" placeholder="https://www.youtube.com/playlist?list=…" required>
+      <button id="register" type="submit">登録</button>
+    </form>
+    <p id="message" role="status"></p>
+  </section>
+
+  <section>
+    <h2>再生順</h2>
+    <fieldset id="order">
+      <legend class="visually-hidden">再生順</legend>
+      <label><input type="radio" name="order" value="shuffle">シャッフル</label>
+      <label><input type="radio" name="order" value="sequential">連続再生</label>
+    </fieldset>
+  </section>
+
+  <section>
+    <h2>背景の見た目</h2>
+    <label class="slider">
+      <span>ぼかし</span>
+      <input id="blur" type="range" min="0" max="40" step="1">
+      <output id="blur-value" for="blur"></output>
+    </label>
+    <label class="slider">
+      <span>暗さ</span>
+      <input id="dim" type="range" min="0" max="80" step="1">
+      <output id="dim-value" for="dim"></output>
+    </label>
+  </section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

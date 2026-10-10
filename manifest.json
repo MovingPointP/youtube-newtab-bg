@@ -6,7 +6,10 @@
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
-  "permissions": ["declarativeNetRequest"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["declarativeNetRequest", "storage", "activeTab"],
   "host_permissions": ["https://www.youtube.com/*"],
   "declarative_net_request": {
     "rule_resources": [

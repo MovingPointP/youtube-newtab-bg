@@ -5,10 +5,27 @@
   <title>新しいタブ</title>
   <style>
     :root {
-      /* 後でポップアップの設定に置き換える（DESIGN.md 4-4） */
+      /* 設定（settings.js）を読み込むまでの値。newtab.js が上書きする */
       --blur: 16px;
       --dim: 0.35;
     }
+    /* 未登録・エラー時の表示（DESIGN.md 4-5、mockup/project/NewTabEmpty.dc.html） */
+    #empty {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #16181d;
+      color: #e8eaef;
+      font-family: system-ui, 'Segoe UI', 'Yu Gothic UI', 'Hiragino Sans', sans-serif;
+      text-align: center;
+    }
+    #empty[hidden] { display: none; }
+    #empty h1 { margin: 0; font-size: 20px; font-weight: 600; }
+    #empty p { margin: 0; color: #a9b1bf; font-size: 15px; line-height: 1.7; }
     html, body {
       margin: 0;
       height: 100%;
@@ -110,6 +127,12 @@
 <body>
   <div id="player"></div>
   <div id="dim"></div>
+
+  <div id="empty" hidden>
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9aa3b2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9.5 4.5 2.5-4.5 2.5z"/></svg>
+    <h1>プレイリストが登録されていません</h1>
+    <p>ツールバーの拡張アイコンから、プレイリストを登録してください</p>
+  </div>
 
   <div id="panel" hidden>
     <div id="title-box"><a id="title" href="https://www.youtube.com/"></a></div>
