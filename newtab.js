@@ -1,4 +1,4 @@
-import { createPlayer } from './player.js';
+import { createPlayer, allowEmbedding } from './player.js';
 import { loadSettings, saveSettings, onSettingsChanged } from './settings.js';
 
 const $ = (id) => document.getElementById(id);
@@ -56,26 +56,15 @@ function applyLook({ blur, dim }) {
 }
 
 // ---- 動画の表示（DESIGN.md 4-3） ----
-// YouTube は、再生が始まるたび（開いたとき・次の動画・裏から戻ったとき）に約 4〜5 秒、
-// 画面の中央に操作ボタンを出す。消せないので、その間は動画を隠し、消えてからふわっと出す
-const BUTTONS_SHOWN_MS = 5000;
-// 動画の終わりは、この秒数前からふわっと暗くする（暗くなるのにかかる時間は newtab.html の transition）
+// 再生が始まったらふわっと明るくし、動画の終わりはふわっと暗くする（かかる時間は newtab.html の transition）
 const FADE_OUT_BEFORE_END_S = 2;
 
-let showTimer = null;
-
-function hideVideo() {
-  clearTimeout(showTimer);
-  showTimer = null;
+function fadeOutVideo() {
   document.body.classList.remove('video-visible');
 }
 
-function showVideoLater() {
-  if (showTimer || document.body.classList.contains('video-visible')) return;
-  showTimer = setTimeout(() => {
-    showTimer = null;
-    document.body.classList.add('video-visible');
-  }, BUTTONS_SHOWN_MS);
+function fadeInVideo() {
+  document.body.classList.add('video-visible');
 }
 
 // ---- プレーヤー ----
@@ -99,7 +88,7 @@ function startPlayer({ playlistId, shuffle, volume }) {
       if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
 
       if ('currentTime' in changed && info.duration && info.duration - changed.currentTime <= FADE_OUT_BEFORE_END_S) {
-        hideVideo();
+        fadeOutVideo();
       }
 
       if ('playlist' in changed) log(`プレイリスト ${changed.playlist?.length ?? 0} 本`);
@@ -121,10 +110,10 @@ function startPlayer({ playlistId, shuffle, volume }) {
       if (state === 1) {
         errorCount = 0;
         player.hideCaptions(); // 字幕は動画ごとに読み込まれるので、再生が始まるたびに外す
-        showVideoLater();
+        fadeInVideo();
       } else if (state !== 3) {
         // 未開始・終了・一時停止・頭出し。読み込み中（3）は、再生の途中でも起きるので隠さない
-        hideVideo();
+        fadeOutVideo();
       }
       // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
       if (state === 1 && document.hidden) player.pause();
@@ -183,6 +172,7 @@ const settings = await loadSettings();
 applyLook(settings);
 
 // プレイリストが未登録なら、案内を出す（DESIGN.md 4-5）
+if (settings.playlistId) await allowEmbedding();
 const player = settings.playlistId ? startPlayer(settings) : null;
 $('empty').hidden = Boolean(player);
 

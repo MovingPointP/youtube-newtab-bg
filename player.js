@@ -4,6 +4,29 @@
 
 const YT_ORIGIN = 'https://www.youtube.com';
 
+// 拡張のページからの埋め込みには Referer が付かず、YouTube がエラー153で再生を拒否するので、
+// この拡張から出た YouTube の iframe のリクエストにだけ Referer を付ける（DESIGN.md 1-3）。
+// 拡張の ID はインストールするまで分からないので、固定のルールファイルではなく、ここで登録する
+const REFERER_RULE_ID = 1;
+
+export function allowEmbedding() {
+  return chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: [REFERER_RULE_ID],
+    addRules: [{
+      id: REFERER_RULE_ID,
+      action: {
+        type: 'modifyHeaders',
+        requestHeaders: [{ header: 'Referer', operation: 'set', value: 'https://youtube-newtab-bg.example/' }],
+      },
+      condition: {
+        initiatorDomains: [chrome.runtime.id],
+        requestDomains: ['www.youtube.com'],
+        resourceTypes: ['sub_frame'],
+      },
+    }],
+  });
+}
+
 // container の中にプレーヤーの iframe を作る。
 // コールバック:
 //   onReady()               プレーヤーの準備ができた
@@ -20,7 +43,6 @@ export function createPlayer(container, { playlistId, onReady, onInfo, onStateCh
     controls: '0',
     cc_load_policy: '0', // 字幕を最初から出さない（ミュート時の自動字幕には効かないので hideCaptions も使う）
     origin: location.origin,
-    newtabbg: '1', // 目印。rules.json がこれを見て Referer を付ける（DESIGN.md 1-3）
   });
 
   const iframe = document.createElement('iframe');

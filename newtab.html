@@ -43,7 +43,7 @@
       border: 0;
       filter: blur(var(--blur));
       pointer-events: none; /* YouTube のタイトルやボタンを出さない（DESIGN.md 4-3） */
-      /* 再生が始まった直後に YouTube が出すボタンを見せないよう、newtab.js が表示を切り替える（DESIGN.md 4-3） */
+      /* 再生中だけふわっと表示する。切り替えは newtab.js（DESIGN.md 4-3） */
       opacity: 0;
       transition: opacity 1.5s;
     }

@@ -56,12 +56,8 @@ test.describe('見た目', () => {
     });
   }
 
-  test('再生が始まってから約 5 秒は動画を隠し、そのあと表示する', async ({ page }) => {
-    // YouTube が再生直後に出すボタンを見せないため
-    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
-    await page.waitForTimeout(3000);
-    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
-    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 5000 });
+  test('再生が始まったら動画を表示する', async ({ page }) => {
+    await expect(page.locator('body')).toHaveClass(/video-visible/);
     await expect(page.locator('#player iframe')).toHaveCSS('opacity', '1', { timeout: 3000 });
   });
 
@@ -75,7 +71,7 @@ test.describe('見た目', () => {
     await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 10_000 });
   });
 
-  test('裏から戻ったときも、約 5 秒は動画を隠す', async ({ page }) => {
+  test('裏で一時停止している間は暗くし、戻って再生が始まったら表示する', async ({ page }) => {
     await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 10_000 });
     const setHidden = (hidden) =>
       page.evaluate((h) => {
@@ -85,9 +81,13 @@ test.describe('見た目', () => {
     await setHidden(true);
     await expect(page.locator('body')).not.toHaveClass(/video-visible/, { timeout: 5000 });
     await setHidden(false);
-    await page.waitForTimeout(2000);
-    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
-    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 6000 });
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 5000 });
+  });
+
+  test('YouTube への Referer は、この拡張から出たリクエストにだけ付ける', async ({ page }) => {
+    const rules = await page.evaluate(() => chrome.declarativeNetRequest.getDynamicRules());
+    expect(rules).toHaveLength(1);
+    expect(rules[0].condition.initiatorDomains).toEqual([await page.evaluate(() => chrome.runtime.id)]);
   });
 
   test('動画はマウス操作に反応しない', async ({ page }) => {
