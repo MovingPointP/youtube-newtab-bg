@@ -130,8 +130,10 @@ function startPlayer({ playlistId, shuffle, volume }) {
 
   function skipBrokenVideo() {
     errorCount++;
+    // プレイリスト自体が削除・非公開のときは、本数が届かないまま 1 回目で止まる
     if (errorCount >= (player.info.playlist?.length ?? 1)) {
       log('再生できる動画がないため停止');
+      showNotice('unplayable');
       return;
     }
     player.nextVideo();
@@ -167,14 +169,37 @@ function startPlayer({ playlistId, shuffle, volume }) {
   return player;
 }
 
+// ---- 未登録・エラー時の案内（DESIGN.md 4-5） ----
+const NOTICES = {
+  unregistered: ['プレイリストが登録されていません', 'ツールバーの拡張アイコンから、プレイリストを登録してください'],
+  offline: ['オフラインです', 'インターネットにつながると、再生が始まります'],
+  unplayable: [
+    'プレイリストを再生できません',
+    '削除されたか、非公開になっている可能性があります。ツールバーの拡張アイコンから登録し直してください',
+  ],
+};
+
+function showNotice(kind) {
+  [$('empty-title').textContent, $('empty-text').textContent] = NOTICES[kind];
+  $('empty').dataset.kind = kind;
+  $('empty').hidden = false;
+  $('panel').hidden = true;
+}
+
 // ---- 設定を読み込んで始める（DESIGN.md 5-3） ----
 const settings = await loadSettings();
 applyLook(settings);
 
-// プレイリストが未登録なら、案内を出す（DESIGN.md 4-5）
-if (settings.playlistId) await allowEmbedding();
-const player = settings.playlistId ? startPlayer(settings) : null;
-$('empty').hidden = Boolean(player);
+let player = null;
+if (!settings.playlistId) {
+  showNotice('unregistered');
+} else if (!navigator.onLine) {
+  showNotice('offline');
+  addEventListener('online', () => location.reload(), { once: true });
+} else {
+  await allowEmbedding();
+  player = startPlayer(settings);
+}
 
 // ポップアップで設定を変えたら、開いている新しいタブにもその場で反映する
 onSettingsChanged((changed) => {
