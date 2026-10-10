@@ -51,8 +51,26 @@
       font-weight: 600;
       cursor: pointer;
     }
-    button:disabled { cursor: default; opacity: 0.4; }
+    /* 押せないボタンはマウスを素通りさせ、外側の要素の説明（title）を出す */
+    button:disabled { cursor: default; opacity: 0.4; pointer-events: none; }
+    #use-tab-wrap { position: relative; display: flex; }
+    /* 拡張のポップアップではブラウザの title の説明が出ないので、自前で出す */
+    #use-tab-wrap[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #1d2129;
+      color: #fff;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1;
+    }
     #use-tab {
+      flex: 1;
       height: 40px;
       border: 0;
       border-radius: 8px;
@@ -135,12 +153,15 @@
       <span id="current-label">登録中</span>
       <span id="current-title">未登録</span>
     </div>
-    <button id="use-tab" type="button" disabled>このプレイリストを使う</button>
-    <div id="use-tab-note" class="note">YouTube でプレイリストを開くと使えます</div>
-    <div class="note">または URL を貼り付け</div>
+    <!-- 押せないボタンはマウスを受け取らないので、外側の要素に説明を付ける -->
+    <div id="use-tab-wrap">
+      <button id="use-tab" type="button" disabled aria-describedby="use-tab-tip">このプレイリストを使う</button>
+      <span id="use-tab-tip" class="visually-hidden"></span>
+    </div>
+    <div class="note">または URL か ID を貼り付け</div>
     <form id="url-form" class="row">
-      <label class="visually-hidden" for="url">プレイリストの URL</label>
-      <input id="url" type="url" placeholder="https://www.youtube.com/playlist?list=…" required>
+      <label class="visually-hidden" for="url">プレイリストの URL または ID</label>
+      <input id="url" type="text" placeholder="プレイリストの URL または ID" required>
       <button id="register" type="submit">登録</button>
     </form>
     <p id="message" role="status"></p>

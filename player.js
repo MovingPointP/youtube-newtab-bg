@@ -18,6 +18,7 @@ export function createPlayer(container, { playlistId, onReady, onInfo, onStateCh
     autoplay: '1',
     mute: '1',
     controls: '0',
+    cc_load_policy: '0', // 字幕を最初から出さない（ミュート時の自動字幕には効かないので hideCaptions も使う）
     origin: location.origin,
     newtabbg: '1', // 目印。rules.json がこれを見て Referer を付ける（DESIGN.md 1-3）
   });
@@ -94,5 +95,8 @@ export function createPlayer(container, { playlistId, onReady, onInfo, onStateCh
     setLoop: (loop) => command('setLoop', loop),
     playVideoAt: (index) => command('playVideoAt', index),
     nextVideo: () => command('nextVideo'),
+    seekTo: (seconds) => command('seekTo', seconds, true),
+    // ミュートで再生すると YouTube が字幕を自動で出すので、字幕の機能ごと外す（公式の API にはない命令）
+    hideCaptions: () => command('unloadModule', 'captions'),
   };
 }

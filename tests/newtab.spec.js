@@ -56,6 +56,40 @@ test.describe('見た目', () => {
     });
   }
 
+  test('再生が始まってから約 5 秒は動画を隠し、そのあと表示する', async ({ page }) => {
+    // YouTube が再生直後に出すボタンを見せないため
+    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
+    await page.waitForTimeout(3000);
+    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 5000 });
+    await expect(page.locator('#player iframe')).toHaveCSS('opacity', '1', { timeout: 3000 });
+  });
+
+  test('動画の終わりで暗くし、次の動画が始まってから表示する', async ({ page }) => {
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 10_000 });
+    const title = await page.locator('#title').textContent();
+    await page.click('#near-end'); // 残り 5 秒へ
+    // 飛んだ先の読み込み（4K だと数秒かかる）を待つ分、長めに待つ
+    await expect(page.locator('body')).not.toHaveClass(/video-visible/, { timeout: 15_000 });
+    await expect(page.locator('#title')).not.toHaveText(title, { timeout: 10_000 });
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 10_000 });
+  });
+
+  test('裏から戻ったときも、約 5 秒は動画を隠す', async ({ page }) => {
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 10_000 });
+    const setHidden = (hidden) =>
+      page.evaluate((h) => {
+        Object.defineProperty(document, 'hidden', { configurable: true, get: () => h });
+        document.dispatchEvent(new Event('visibilitychange'));
+      }, hidden);
+    await setHidden(true);
+    await expect(page.locator('body')).not.toHaveClass(/video-visible/, { timeout: 5000 });
+    await setHidden(false);
+    await page.waitForTimeout(2000);
+    await expect(page.locator('body')).not.toHaveClass(/video-visible/);
+    await expect(page.locator('body')).toHaveClass(/video-visible/, { timeout: 6000 });
+  });
+
   test('動画はマウス操作に反応しない', async ({ page }) => {
     await expect(page.locator('#player iframe')).toHaveCSS('pointer-events', 'none');
   });
@@ -70,6 +104,36 @@ test.describe('見た目', () => {
 });
 
 test.describe('音', () => {
+  test('音量の初期値は 50', async ({ page }) => {
+    await expect(debug.volume(page)).toHaveText('50');
+    await expect(page.locator('#volume')).toHaveValue('50');
+  });
+
+  test('変えた音量は保存し、次に開いた新しいタブで使う', async ({ page, context, extensionId }) => {
+    await page.locator('#volume').fill('30');
+    await expect(debug.volume(page)).toHaveText('30');
+
+    const next = await context.newPage();
+    await next.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await waitForPlaying(next);
+    await expect(debug.volume(next)).toHaveText('30');
+    await expect(next.locator('#volume')).toHaveValue('30');
+    // 新しいタブも、ミュートで始まる
+    await expect(debug.muted(next)).toHaveText('ミュート中');
+  });
+
+  test('音量は、開いている他の新しいタブには反映しない', async ({ page, context, extensionId }) => {
+    const other = await context.newPage();
+    await other.goto(`chrome-extension://${extensionId}/newtab.html`);
+    await waitForPlaying(other);
+
+    await page.bringToFront();
+    await page.locator('#volume').fill('20');
+    await expect(debug.volume(page)).toHaveText('20');
+    await page.waitForTimeout(1000);
+    await expect(debug.volume(other)).toHaveText('50');
+  });
+
   test('スピーカーでミュートを切り替え、アイコンも変わる', async ({ page }) => {
     await expect(debug.muted(page)).toHaveText('ミュート中');
     await expect(page.locator('#icon-muted')).toBeVisible();

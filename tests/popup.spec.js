@@ -30,6 +30,18 @@ test.describe('未登録', () => {
     expect((await getSettings(popup)).playlistId).toBe(NASA_PLAYLIST.id);
   });
 
+  test('ID だけでも登録できる', async ({ popup }) => {
+    await popup.fill('#url', NASA_PLAYLIST.id);
+    await popup.click('#register');
+    await expect(popup.locator('#message')).toHaveText('登録しました', { timeout: 15_000 });
+    expect((await getSettings(popup)).playlistId).toBe(NASA_PLAYLIST.id);
+  });
+
+  test('初期値は、ぼかし 6・暗さ 50%', async ({ popup }) => {
+    await expect(popup.locator('#blur-value')).toHaveText('6');
+    await expect(popup.locator('#dim-value')).toHaveText('50%');
+  });
+
   test('プレイリストではない URL は登録しない', async ({ popup }) => {
     await popup.fill('#url', 'https://www.youtube.com/watch?v=Sv3eXRN7hLo');
     await popup.click('#register');
@@ -62,7 +74,12 @@ test.describe('登録済み', () => {
 
   test('YouTube 以外のタブでは「このプレイリストを使う」を押せない', async ({ popup }) => {
     await expect(popup.locator('#use-tab')).toBeDisabled();
-    await expect(popup.locator('#use-tab-note')).toBeVisible();
+    // 説明は、マウスを乗せたときだけ出す
+    const tip = () =>
+      popup.evaluate(() => getComputedStyle(document.getElementById('use-tab-wrap'), '::after').content);
+    expect(await tip()).toBe('none');
+    await popup.hover('#use-tab-wrap');
+    expect(await tip()).toBe('"YouTube でプレイリストを開くと使えます"');
   });
 
   test('再生順を切り替えると保存し、開き直しても残る', async ({ popup }) => {

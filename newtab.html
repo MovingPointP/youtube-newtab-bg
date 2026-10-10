@@ -6,8 +6,8 @@
   <style>
     :root {
       /* 設定（settings.js）を読み込むまでの値。newtab.js が上書きする */
-      --blur: 16px;
-      --dim: 0.35;
+      --blur: 6px;
+      --dim: 0.5;
     }
     /* 未登録・エラー時の表示（DESIGN.md 4-5、mockup/project/NewTabEmpty.dc.html） */
     #empty {
@@ -43,7 +43,11 @@
       border: 0;
       filter: blur(var(--blur));
       pointer-events: none; /* YouTube のタイトルやボタンを出さない（DESIGN.md 4-3） */
+      /* 再生が始まった直後に YouTube が出すボタンを見せないよう、newtab.js が表示を切り替える（DESIGN.md 4-3） */
+      opacity: 0;
+      transition: opacity 1.5s;
     }
+    body.video-visible #player iframe { opacity: 1; }
     #dim {
       position: fixed;
       inset: 0;
@@ -153,6 +157,7 @@
     </dl>
     <button id="next">次へ</button>
     <button id="last">最後の動画へ</button>
+    <button id="near-end">終わり近くへ</button>
     <ul id="log"></ul>
   </div>
 

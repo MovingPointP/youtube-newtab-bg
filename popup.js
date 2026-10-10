@@ -35,7 +35,7 @@ $('url-form').addEventListener('submit', (e) => {
   e.preventDefault();
   const id = parsePlaylistId($('url').value);
   if (!id) {
-    showMessage('プレイリストの URL ではありません（list= を含む YouTube の URL を貼り付けてください）', 'error');
+    showMessage('プレイリストの URL または ID ではありません（list= を含む YouTube の URL か、ID を貼り付けてください）', 'error');
     return;
   }
   register(id).then(() => ($('url').value = ''));
@@ -46,7 +46,9 @@ let tabPlaylistId = null;
 chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
   tabPlaylistId = tab?.url ? parsePlaylistId(tab.url) : null;
   $('use-tab').disabled = !tabPlaylistId;
-  $('use-tab-note').hidden = Boolean(tabPlaylistId);
+  const tip = tabPlaylistId ? '' : 'YouTube でプレイリストを開くと使えます';
+  if (tip) $('use-tab-wrap').dataset.tip = tip;
+  $('use-tab-tip').textContent = tip; // 画面読み上げ用
 });
 $('use-tab').addEventListener('click', () => register(tabPlaylistId));
 

@@ -1,5 +1,5 @@
 import { createPlayer } from './player.js';
-import { loadSettings, onSettingsChanged } from './settings.js';
+import { loadSettings, saveSettings, onSettingsChanged } from './settings.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -55,12 +55,36 @@ function applyLook({ blur, dim }) {
   if (dim !== undefined) document.documentElement.style.setProperty('--dim', dim);
 }
 
+// ---- 動画の表示（DESIGN.md 4-3） ----
+// YouTube は、再生が始まるたび（開いたとき・次の動画・裏から戻ったとき）に約 4〜5 秒、
+// 画面の中央に操作ボタンを出す。消せないので、その間は動画を隠し、消えてからふわっと出す
+const BUTTONS_SHOWN_MS = 5000;
+// 動画の終わりは、この秒数前からふわっと暗くする（暗くなるのにかかる時間は newtab.html の transition）
+const FADE_OUT_BEFORE_END_S = 2;
+
+let showTimer = null;
+
+function hideVideo() {
+  clearTimeout(showTimer);
+  showTimer = null;
+  document.body.classList.remove('video-visible');
+}
+
+function showVideoLater() {
+  if (showTimer || document.body.classList.contains('video-visible')) return;
+  showTimer = setTimeout(() => {
+    showTimer = null;
+    document.body.classList.add('video-visible');
+  }, BUTTONS_SHOWN_MS);
+}
+
 // ---- プレーヤー ----
-function startPlayer({ playlistId, shuffle }) {
+function startPlayer({ playlistId, shuffle, volume }) {
   let started = false;
 
   // 連打しても古い状態で判断しないよう、YouTube から届くのを待たずに手元で先に書き換える
-  const sound = { muted: true, volume: undefined };
+  const sound = { muted: true, volume };
+  $('volume').value = volume;
 
   const player = createPlayer($('player'), {
     playlistId,
@@ -74,6 +98,10 @@ function startPlayer({ playlistId, shuffle }) {
       // つまみを動かしている最中は、届いた値で上書きしない
       if ('volume' in changed && document.activeElement !== $('volume')) $('volume').value = changed.volume;
 
+      if ('currentTime' in changed && info.duration && info.duration - changed.currentTime <= FADE_OUT_BEFORE_END_S) {
+        hideVideo();
+      }
+
       if ('playlist' in changed) log(`プレイリスト ${changed.playlist?.length ?? 0} 本`);
       if (changed.videoData?.title) log(`動画名: ${changed.videoData.title}`);
 
@@ -82,6 +110,7 @@ function startPlayer({ playlistId, shuffle }) {
         started = true;
         player.setShuffle(shuffle);
         player.setLoop(true); // 最後まで行ったら最初に戻る
+        player.setVolume(volume); // 保存した音量で始める（ミュートのまま）
         const index = Math.floor(Math.random() * info.playlist.length);
         player.playVideoAt(index);
         log(`シャッフル=${shuffle}、${index + 1} 本目から再生`);
@@ -89,7 +118,14 @@ function startPlayer({ playlistId, shuffle }) {
     },
     onStateChange: (state) => {
       log(`onStateChange: ${state}`);
-      if (state === 1) errorCount = 0;
+      if (state === 1) {
+        errorCount = 0;
+        player.hideCaptions(); // 字幕は動画ごとに読み込まれるので、再生が始まるたびに外す
+        showVideoLater();
+      } else if (state !== 3) {
+        // 未開始・終了・一時停止・頭出し。読み込み中（3）は、再生の途中でも起きるので隠さない
+        hideVideo();
+      }
       // 裏で開かれたときや、隠れた直後に次の動画が始まったときも止める
       if (state === 1 && document.hidden) player.pause();
     },
@@ -125,9 +161,12 @@ function startPlayer({ playlistId, shuffle }) {
   });
   $('next').addEventListener('click', () => player.nextVideo());
   $('last').addEventListener('click', () => player.playVideoAt(player.info.playlist.length - 1));
+  $('near-end').addEventListener('click', () => player.seekTo(player.info.duration - 5));
   $('volume').addEventListener('input', (e) => {
     sound.volume = Number(e.target.value);
     player.setVolume(sound.volume);
+    // 次に開く新しいタブのために保存する。開いている他のタブには反映しない
+    saveSettings({ volume: sound.volume });
     // 0 のまま解除すると YouTube が音量を 5 にしてしまうので、0 より大きいときだけ
     if (sound.muted && sound.volume > 0) {
       sound.muted = false;

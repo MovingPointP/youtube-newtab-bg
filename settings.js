@@ -4,8 +4,9 @@ export const DEFAULTS = {
   playlistId: null,
   playlistTitle: null,
   shuffle: true, // false で連続再生（DESIGN.md 2-2）
-  blur: 16, // px（DESIGN.md 4-4）
-  dim: 0.35, // 0〜1
+  blur: 6, // px（DESIGN.md 4-4）
+  dim: 0.5, // 0〜1
+  volume: 50, // 0〜100。新しいタブを開いたときの音量（DESIGN.md 3）
 };
 
 export async function loadSettings() {
@@ -30,17 +31,20 @@ export function onSettingsChanged(callback) {
 
 const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
 
-// プレイリストの URL（watch?v=...&list=... も含む）から ID を取り出す。取り出せなければ null
+const PLAYLIST_ID = /^[A-Za-z0-9_-]{10,}$/;
+
+// プレイリストの URL（watch?v=...&list=... も含む）か ID そのものから、ID を取り出す。取り出せなければ null
 export function parsePlaylistId(text) {
+  text = text.trim();
   let url;
   try {
-    url = new URL(text.trim());
+    url = new URL(text);
   } catch {
-    return null;
+    return PLAYLIST_ID.test(text) ? text : null;
   }
   if (!YOUTUBE_HOSTS.includes(url.hostname)) return null;
   const id = url.searchParams.get('list');
-  return id && /^[A-Za-z0-9_-]+$/.test(id) ? id : null;
+  return id && PLAYLIST_ID.test(id) ? id : null;
 }
 
 // YouTube の公開情報（oEmbed）からプレイリスト名を取る。
